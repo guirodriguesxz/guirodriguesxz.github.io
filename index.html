@@ -3,10 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Guilherme Rodrigues | Desenvolvedor</title>
 <meta name="description" content="Guilherme Rodrigues, desenvolvedor back-end em São Paulo. Sistemas web, APIs, SaaS, automações e soluções com IA para o seu negócio.">
 <meta property="og:title" content="Guilherme Rodrigues | Desenvolvedor">
 <meta property="og:description" content="Sistemas web, APIs, automações e IA sob medida para o seu negócio.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://guirodriguesxz.github.io/">
+<meta property="og:image" content="https://guirodriguesxz.github.io/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://guirodriguesxz.github.io/og.jpg">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#2563eb">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -66,6 +79,7 @@ details p{color:var(--muted);margin-top:10px}
 .info a:hover{color:var(--accent)}
 form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:var(--shadow);display:grid;gap:14px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label[hidden]{display:none}
 label{font-size:.85rem;font-weight:600;display:grid;gap:6px}
 input,select,textarea{font:inherit;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);border-color:transparent}
@@ -169,24 +183,25 @@ footer{padding:32px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
     <h2>Vamos tirar sua ideia do papel?</h2>
     <p class="sub" style="margin-bottom:20px">Preencha o formulário e ele já abre uma conversa comigo no WhatsApp. Respondo rapidinho!</p>
     <a href="https://wa.me/5511944983631" target="_blank" rel="noopener">💬 (11) 94498-3631</a>
-    <a href="mailto:guirodrigues2080@gmail.com">✉️ guirodrigues2080@gmail.com</a>
+    <a href="#" id="mail" data-u="guirodrigues2080" data-d="gmail.com">✉️ <span>e-mail</span></a>
     <a href="https://www.linkedin.com/in/guilhermerodrigueszx/" target="_blank" rel="noopener">🔗 LinkedIn</a>
     <a href="https://github.com/guirodriguesxz" target="_blank" rel="noopener">🐙 GitHub</a>
   </div>
   <form id="form" class="reveal">
     <div class="row">
-      <label>Nome<input name="nome" required placeholder="Seu nome"></label>
-      <label>E-mail<input name="email" type="email" placeholder="voce@email.com"></label>
+      <label>Nome<input name="nome" required maxlength="80" placeholder="Seu nome"></label>
+      <label>E-mail<input name="email" type="email" maxlength="120" placeholder="voce@email.com"></label>
     </div>
     <div class="row">
       <label>Tipo de serviço<select name="servico">
         <option>Sistema Web / SaaS</option><option>Agendamento Online</option><option>API / Integração</option><option>Automação / Chatbot</option><option>Inteligência Artificial</option><option>Site / Landing Page</option><option>Manutenção mensal</option><option>Outro</option>
       </select></label>
       <label>Investimento estimado<select name="orcamento">
-        <option>Ainda não sei</option><option>Até R$ 1.000</option><option>R$ 1.000 a R$ 3.000</option><option>R$ 3.000 a R$ 8.000</option><option>Acima de R$ 8.000</option>
+        <option>Ainda não sei</option><option>Até R$ 1.000</option><option>R$ 1.000 a R$ 3.000</option><option>R$ 3.000 a R$ 8.000</option><option>Acima de R$ 8.000</option><option value="proprio">Tenho um valor em mente</option>
       </select></label>
     </div>
-    <label>Conte sobre o projeto<textarea name="msg" required placeholder="O que você precisa? Qual problema quer resolver?"></textarea></label>
+    <label id="valorBox" hidden>Qual valor você tem em mente?<input name="valor" maxlength="30" inputmode="decimal" placeholder="Ex.: R$ 2.500"></label>
+    <label>Conte sobre o projeto<textarea name="msg" required maxlength="1500" placeholder="O que você precisa? Qual problema quer resolver?"></textarea></label>
     <button class="btn" type="submit">Enviar pelo WhatsApp →</button>
   </form>
 </div></section>
@@ -199,14 +214,17 @@ footer{padding:32px 0;text-align:center;color:var(--muted);font-size:.9rem;borde
 </a>
 
 <script>
+const ml=document.getElementById('mail'),em=ml.dataset.u+'@'+ml.dataset.d;ml.href='mailto:'+em;ml.querySelector('span').textContent=em;
 document.getElementById('y').textContent=new Date().getFullYear();
 const root=document.documentElement;
 try{const t=localStorage.getItem('theme');if(t)root.dataset.theme=t}catch(e){}
 document.getElementById('theme').onclick=()=>{const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme)}catch(e){}};
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target)}}),{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const orc=document.querySelector('[name=orcamento]'),vb=document.getElementById('valorBox');
+orc.onchange=()=>{const on=orc.value==='proprio';vb.hidden=!on;vb.querySelector('input').required=on;if(on)vb.querySelector('input').focus()};
 document.getElementById('form').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);
-const txt=`Olá Guilherme! Vim pelo seu site.\n\n*Nome:* ${f.get('nome')}\n*E-mail:* ${f.get('email')||'-'}\n*Serviço:* ${f.get('servico')}\n*Investimento:* ${f.get('orcamento')}\n\n*Projeto:* ${f.get('msg')}`;
+const txt=`Olá Guilherme! Vim pelo seu site.\n\n*Nome:* ${f.get('nome')}\n*E-mail:* ${f.get('email')||'-'}\n*Serviço:* ${f.get('servico')}\n*Investimento:* ${f.get('orcamento')==='proprio'?f.get('valor'):f.get('orcamento')}\n\n*Projeto:* ${f.get('msg')}`;
 window.open('https://wa.me/5511944983631?text='+encodeURIComponent(txt),'_blank');};
 </script>
 </body>
